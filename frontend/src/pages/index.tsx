@@ -1,56 +1,126 @@
 import Head from 'next/head'
-import Legends from '../components/legends'
+import Link from 'next/link'
 
 export default function Home() {
   return (
     <div>
       <Head>
-        <title>Notes App | Homepage</title>
+        <title>NotesApp | Think. Create. Save.</title>
+        <meta name="description" content="A modern notes application to capture your thoughts, ideas, and everything in between." />
       </Head>
-      <div className='text-white'>
-        <div className='flex w-full min-h-[65vh] justify-center relative z-0'>
-          <div className='max-h-full bg-[url("/homepage.svg")] bg-cover  bg-no-repeat w-full overflow-hidden opacity-30 z-0'></div>
-          <div className='absolute inset-1/2 transform -translate-x-10 -translate-y-10'>
-            <div className=' text-6xl z-50 font-semibold'>
-              <span className='text-red-500'>Think.</span>
-              <span className='text-blue-400'>Create.</span>
-              <span className='text-yellow-300'>Save.</span>
-            </div>
+
+      {/* ── Hero ── */}
+      <section style={{ position: 'relative', minHeight: '90vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg)' }}>
+        {/* Background Graphic */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url("/homepage.svg")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.15,
+          zIndex: 0
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto', padding: '0 2rem', textAlign: 'center' }}>
+          {/* Badge */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.35rem 1rem',
+            background: 'var(--color-surface)',
+            border: '2px solid var(--color-border)',
+            boxShadow: '4px 4px 0px rgba(0,0,0,0.5)',
+            fontSize: '0.8rem',
+            fontWeight: 800,
+            color: 'var(--color-text)',
+            marginBottom: '2rem',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          }}>
+            <span style={{ width: '8px', height: '8px', background: 'var(--color-accent-blue)', display: 'block' }} />
+            YOUR SECOND BRAIN
+          </div>
+
+          {/* Heading */}
+          <h1 style={{ fontSize: 'clamp(3.5rem, 8vw, 6.5rem)', fontWeight: 900, lineHeight: 1.05, marginBottom: '1.5rem', letterSpacing: '-0.03em' }}>
+            <span style={{ color: 'var(--color-accent-red)' }}>Think.</span>{' '}
+            <span style={{ color: 'var(--color-accent-blue)' }}>Create.</span>
+            <br />
+            <span style={{ color: 'var(--color-accent-yellow)' }}>Save.</span>
+          </h1>
+
+          {/* Subheading */}
+          <p style={{ fontSize: '1.25rem', color: 'var(--color-text-muted)', maxWidth: '560px', margin: '0 auto 3rem', lineHeight: 1.6, fontWeight: 500 }}>
+            A bold, beautifully simple notes app built to capture your thoughts the moment they spark. Fast, organized, and always with you.
+          </p>
+
+          {/* CTA buttons */}
+          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href='/login' style={{ textDecoration: 'none' }}>
+              <button className='btn-primary' style={{ padding: '1rem 2.5rem', fontSize: '1.1rem' }}>
+                Get Started &rarr;
+              </button>
+            </Link>
+            <Link href='/register' style={{ textDecoration: 'none' }}>
+              <button className='btn-ghost' style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', background: 'var(--color-surface)', color: 'var(--color-text)' }}>
+                Create Account
+              </button>
+            </Link>
           </div>
         </div>
-        <article className='flex w-full min-h-[35vh] justify-center'>
-          <div className='w-[60%] m-10'>
-            <div className='text-3xl font-semibold '>About</div>
-            <div className='m-5 text-justify'>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minus, eum? Hic unde facere
-              est delectus placeat doloribus nobis molestias sequi officia velit dolorum ipsam, ipsa
-              quos, corporis omnis natus ab dolores cupiditate quam voluptatum? Nemo reprehenderit
-              culpa fugit? Ea libero fugiat placeat facilis quaerat expedita blanditiis tempore
-              adipisci, nesciunt quo dignissimos asperiores veritatis ab vel ut cupiditate, ipsa
-              qui, reiciendis corporis earum dolorum provident! Nesciunt perferendis nostrum ducimus
-              id rem magni suscipit quas! Doloribus rem ex perspiciatis, cupiditate eos ea quia non
-              architecto odit eius consequuntur quos esse eligendi autem placeat veniam adipisci.
-              <br />
-              <br />
-              Eveniet vel illo dolorum, iusto commodi aliquid magnam pariatur dignissimos nemo eius
-              tenetur dolorem reprehenderit repudiandae quisquam! Pariatur a eveniet eos soluta
-              corrupti. Sit facere harum totam tempore enim, ratione dolor, natus sed vitae ea vel!
-              Ullam ex voluptatibus explicabo molestias error quam nesciunt quaerat, eius fuga esse
-              animi nostrum natus nobis ea, quae dolorem. Tenetur, non.
+      </section>
+
+      {/* ── About / Features ── */}
+      <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '6rem 2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-accent-blue)', letterSpacing: '0.1em', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Features</div>
+          <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, letterSpacing: '-0.02em', color: 'var(--color-text)' }}>
+            Everything you need, nothing you don't
+          </h2>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+          {[
+            { icon: '✏️', title: 'Quick Capture', desc: 'Jot down ideas the moment they come. No friction, no fuss — just write.', color: 'var(--color-accent-red)' },
+            { icon: '🗂️', title: 'Organized Grid', desc: 'Your notes presented in a clean, scannable grid so nothing gets lost.', color: 'var(--color-accent-blue)' },
+            { icon: '🔐', title: 'Secure Access', desc: 'Each note belongs to your account. Login protected and always private.', color: 'var(--color-accent-yellow)' },
+          ].map((feature) => (
+            <div key={feature.title} style={{
+              padding: '2.5rem',
+              background: 'var(--color-surface)',
+              border: `2px solid var(--color-border)`,
+              borderTop: `6px solid ${feature.color}`,
+              boxShadow: '6px 6px 0px rgba(0,0,0,0.4)',
+              transition: 'transform 0.1s ease',
+            }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{feature.icon}</div>
+              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--color-text)', marginBottom: '0.75rem' }}>{feature.title}</div>
+              <div style={{ fontSize: '1rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>{feature.desc}</div>
             </div>
-          </div>
-        </article>
-        <footer className='flex w-full min-h-[20vh] bg-slate-950 items-center justify-center text-center'>
-          <div className='w-[80%]'>
-            <div>
-              <i className='text-gray-500'>Personal Project:</i>
-            </div>
-            <div className='font-semibold'>Brett Josef C. Galvez</div>
-            <div className='bg-white w-[100%] h-[1px] mb-2 mt-4' />
-            <div className='text-[.9rem]'>@2023 | All Rights Reserved</div>
-          </div>
-        </footer>
-      </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer style={{
+        borderTop: '2px solid var(--color-border)',
+        padding: '3rem 2rem',
+        textAlign: 'center',
+        background: 'var(--color-surface)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+          <div style={{
+            width: '24px', height: '24px',
+            background: 'var(--color-text)',
+          }} />
+          <span style={{ fontWeight: 900, color: 'var(--color-text)', fontSize: '1.1rem', letterSpacing: '-0.02em' }}>NotesApp</span>
+        </div>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>
+          Personal Project by <span style={{ color: 'var(--color-text)', fontWeight: 800 }}>Brett Josef C. Galvez</span>
+        </p>
+        <p style={{ color: 'var(--color-border)', fontSize: '0.8rem', marginTop: '1rem', fontWeight: 700 }}>© 2023 · ALL RIGHTS RESERVED</p>
+      </footer>
     </div>
   )
 }
