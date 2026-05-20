@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import NoteModel from '../models/note'
+import NoteModel from '../models/note.model'
 import createHttpError from 'http-errors'
 import mongoose from 'mongoose'
 
@@ -33,6 +33,7 @@ export const getNote: RequestHandler = async (req, res, next) => {
 interface CreateNoteBody {
   title?: string
   text?: string
+  type?: string
 }
 
 export const createNote: RequestHandler<unknown, unknown, CreateNoteBody, unknown> = async (
@@ -42,6 +43,7 @@ export const createNote: RequestHandler<unknown, unknown, CreateNoteBody, unknow
 ) => {
   const title = req.body.title
   const text = req.body.text
+  const type = req.body.type
   try {
     if (!title) {
       throw createHttpError(400, 'Note must have a title')
@@ -49,7 +51,8 @@ export const createNote: RequestHandler<unknown, unknown, CreateNoteBody, unknow
 
     const newNote = await NoteModel.create({
       title: title,
-      text: text
+      text: text,
+      type: type || 'document'
     })
 
     res.status(201).json(newNote)
@@ -89,7 +92,7 @@ export const updateNote: RequestHandler<
     }
 
     note.title = newTitle
-    note.text = newText
+    note.content = newText
     const updatedNote = await note.save()
 
     res.status(200).json(updatedNote)

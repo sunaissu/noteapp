@@ -4,10 +4,13 @@ import noteRoutes from './routes/notes'
 import morgan from 'morgan'
 import createHttpError, { isHttpError } from 'http-errors'
 import cors from 'cors'
-import userRoutes from './routes/user'
+import userRoutes from './routes/user.route'
+import authRoutes from './routes/auth.route'
 import session from 'express-session'
 import env from './util/validateEnv'
 import MongoStore from 'connect-mongo'
+import passport from 'passport'
+import './util/passport'
 
 const app = express()
 
@@ -17,7 +20,8 @@ app.use(morgan('dev'))
 
 app.use(
   cors({
-    origin: 'http://localhost:3000'
+    origin: env.CLIENT_URL,
+    credentials: true
   })
 )
 
@@ -27,7 +31,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 12 * 60 * 60 * 1000
+      maxAge: 12 * 60 * 60 * 1000,
+      secure: env.ENVIRONMENT === 'production' ? true : false
     },
     rolling: true,
     store: MongoStore.create({
@@ -36,8 +41,12 @@ app.use(
   })
 )
 
+app.use(passport.initialize())
+app.use(passport.session())
+
 app.use('/api/notes', noteRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/auth', authRoutes)
 
 app.use((req, res, next) => {
   next(createHttpError(404, 'Endpoint not Found'))
