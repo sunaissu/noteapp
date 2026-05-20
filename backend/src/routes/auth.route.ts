@@ -16,4 +16,6 @@ router.get('/google/callback',
         res.redirect(env.CLIENT_URL + '/notes');
     });
 
+router.post('/logout', AuthController.logout)
+
 export default router

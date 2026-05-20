@@ -21,3 +21,16 @@ export const login = async (req: Request, res: Response) => {
     res.status(200).json({ message: 'Login successful', user })
 
 }
+
+export const logout = async (req: Request, res: Response) => {
+    await new Promise<void>((resolve, reject) => {
+        req.logout((err) => err ? reject(err) : resolve());
+    });
+
+    await new Promise<void>((resolve, reject) => {
+        req.session.destroy((err) => err ? reject(err) : resolve());
+    });
+
+    res.clearCookie('connect.sid');
+    res.status(200).json({ message: 'Logged out successfully' });
+};
