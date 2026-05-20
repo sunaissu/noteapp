@@ -1,3 +1,4 @@
+import env from '@/util/config'
 import { Note } from '../../model/note'
 import { User } from '../../model/user'
 
@@ -13,8 +14,9 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
 }
 
 export async function getLoginUser(): Promise<User> {
-  const response = await fetch(`http://localhost:5000/api/users/,`, { method: 'GET' })
-  return response.json()
+  const response = await fetchData(`${env.SERVER_URL}/api/users/getUser`, { method: 'GET', credentials: 'include' })
+  const body = await response.json()
+  return body.user
 }
 
 interface RegisterCredentials {
@@ -24,12 +26,14 @@ interface RegisterCredentials {
 }
 
 export async function registerUser(user: RegisterCredentials): Promise<User> {
-  const response = await fetch(`http://localhost:5000/api/users/register`, {
+  const response = await fetchData(`${env.SERVER_URL}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
+    credentials: 'include'
   })
-  return await response.json()
+  const body = await response.json()
+  return body.user
 }
 
 interface LoginCredentials {
@@ -38,56 +42,62 @@ interface LoginCredentials {
 }
 
 export async function loginUser(user: LoginCredentials): Promise<User> {
-  const response = await fetch(`http://localhost:5000/api/users/login`, {
+  const response = await fetchData(`${env.SERVER_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
+    credentials: 'include'
   })
-  return await response.json()
+  const body = await response.json()
+  return body.user
 }
 
 export async function logout() {
-  await fetch(`http://localhost:5000/api/users/logout`, { method: 'POST' })
+  await fetch(`${env.SERVER_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' })
 }
 
 export async function fetchNotes(): Promise<Note[]> {
-  const response = await fetch(`http://localhost:5000/api/notes`, { method: 'GET' })
+  const response = await fetch(`${env.SERVER_URL}/api/notes`, { method: 'GET', credentials: 'include' })
   return await response.json()
 }
 
 export interface NoteInput {
   title: string
   text?: string
+  type?: string
 }
 
 export async function createNotes(note: NoteInput) {
-  const response = await fetch(`http://localhost:5000/api/notes`, {
+  const response = await fetch(`${env.SERVER_URL}/api/notes`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(note)
+    body: JSON.stringify(note),
+    credentials: 'include'
   })
   return await response.json()
 }
 
 export async function updateNotes(id: string, note: NoteInput) {
-  const response = await fetch(`http://localhost:5000/api/notes/${id}`, {
+  const response = await fetch(`${env.SERVER_URL}/api/notes/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(note)
+    body: JSON.stringify(note),
+    credentials: 'include'
   })
   return await response.json()
 }
 
 export async function deleteNotes(id: string) {
-  const response = await fetch(`http://localhost:5000/api/notes/${id}`, {
+  const response = await fetch(`${env.SERVER_URL}/api/notes/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    credentials: 'include'
   })
   console.log(response)
 }

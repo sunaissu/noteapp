@@ -1,55 +1,38 @@
-import React, { useRef } from 'react'
-import * as NotesApi from '../pages/api/fetch'
-import { Note } from '../model/note'
+import React, { useState } from 'react'
+import { NoteType } from '../model/note'
 
 interface Props {
-  onSave: (note: Note) => void
+  onSave: (type: NoteType) => void
+  trigger?: React.ReactNode
 }
 
-const AddNoteDialog: React.FC<Props> = ({ onSave }: Props) => {
-  const [showDialog, setShowDialog] = React.useState<boolean>(false)
-  const [title, setTitle] = React.useState<string>('')
-  const [text, setText] = React.useState<string>('')
-  const [isblank, setIsblank] = React.useState<boolean>(false)
-  const [loading, setLoading] = React.useState<boolean>(false)
-  const titleRef = useRef<HTMLInputElement>(null)
+const AddNoteDialog: React.FC<Props> = ({ onSave, trigger }: Props) => {
+  const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const onAdd = () => {
-    async function addNote() {
-      try {
-        if (title) {
-          setLoading(true)
-          const notes = await NotesApi.createNotes({ title, text })
-          onSave(notes)
-          setShowDialog(false)
-          setTitle('')
-          setText('')
-        } else {
-          if (titleRef.current) {
-            setIsblank(true)
-            setTimeout(() => {
-              setIsblank(false)
-            }, 5000)
-          }
-        }
-      } catch (error) {
-        console.error(error)
-        alert(error)
-      } finally {
-        setLoading(false)
-      }
+  const onAdd = async (type: NoteType) => {
+    setLoading(true)
+    try {
+      await onSave(type)
+      setShowDialog(false)
+    } finally {
+      setLoading(false)
     }
-    addNote()
   }
 
   return (
     <div>
-      {/* FAB */}
-      <button className='fab' onClick={() => setShowDialog(true)} id='fab-add-note' title='New Note'>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M12 5v14M5 12h14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
-        </svg>
-      </button>
+      {trigger ? (
+        <div onClick={() => setShowDialog(true)} style={{ display: 'block', width: '100%' }}>
+          {trigger}
+        </div>
+      ) : (
+        <button className='fab' onClick={() => setShowDialog(true)} id='fab-add-note' title='New Note'>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
 
       {showDialog && (
         <div className='modal-backdrop' onClick={e => { if (e.target === e.currentTarget) setShowDialog(false) }}>
@@ -59,12 +42,11 @@ const AddNoteDialog: React.FC<Props> = ({ onSave }: Props) => {
             overflow: 'hidden',
             position: 'relative',
           }}>
-            {/* Modal header */}
             <div style={{ padding: '1.75rem 2rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#e8eaf6', letterSpacing: '-0.01em' }}>New Note</h2>
-                  <p style={{ color: '#8892b0', fontSize: '0.8rem', marginTop: '0.2rem' }}>Capture your thoughts</p>
+                  <p style={{ color: '#8892b0', fontSize: '0.8rem', marginTop: '0.2rem' }}>Choose note type</p>
                 </div>
                 <button
                   onClick={() => setShowDialog(false)}
@@ -73,56 +55,39 @@ const AddNoteDialog: React.FC<Props> = ({ onSave }: Props) => {
                   onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 6L6 18M6 6l12 12" stroke="#8892b0" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M18 6L6 18M6 6l12 12" stroke="#8892b0" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </button>
               </div>
             </div>
 
-            {/* Form body */}
-            <div style={{ padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#8892b0', marginBottom: '0.5rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                  Title <span style={{ color: '#f87171' }}>*</span>
-                </label>
-                <input
-                  ref={titleRef}
-                  className='input-base'
-                  placeholder='Give your note a title…'
-                  type='text'
-                  onChange={e => setTitle(e.target.value)}
-                  id='add-note-title'
-                  style={isblank ? { borderColor: 'rgba(239,68,68,0.5)', boxShadow: '0 0 0 3px rgba(239,68,68,0.15)' } : {}}
-                />
-                {isblank && (
-                  <div style={{ color: '#f87171', fontSize: '0.78rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-                    Title is required
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#8892b0', marginBottom: '0.5rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                  Content
-                </label>
-                <textarea
-                  className='input-base'
-                  placeholder='Write your note here…'
-                  onChange={e => setText(e.target.value)}
-                  id='add-note-text'
-                  style={{ resize: 'vertical', minHeight: '160px', fontFamily: 'inherit' }}
-                />
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div style={{ padding: '1rem 2rem 1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-              <button className='btn-ghost' onClick={() => setShowDialog(false)} id='add-note-cancel'>
-                Cancel
+            <div style={{ padding: '1.5rem 2rem', display: 'flex', gap: '1.25rem' }}>
+              <button 
+                onClick={() => onAdd(NoteType.Document)} 
+                disabled={loading}
+                style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', border: '2px solid var(--color-border)', borderRadius: '12px', background: 'var(--color-surface)', cursor: loading ? 'default' : 'pointer', transition: 'transform 0.15s ease, opacity 0.2s ease', opacity: loading ? 0.7 : 1 }}
+                onMouseEnter={e => !loading && (e.currentTarget.style.transform = 'translateY(-2px)')}
+                onMouseLeave={e => !loading && (e.currentTarget.style.transform = 'translateY(0)')}
+              >
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text)' }}>Document</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', textAlign: 'center', marginTop: '0.25rem' }}>Markdown text</div>
+                </div>
               </button>
-              <button className='btn-primary' onClick={() => onAdd()} id='add-note-save' disabled={loading}>
-                {loading ? 'Saving…' : 'Save Note'}
+              
+              <button 
+                onClick={() => onAdd(NoteType.Whiteboard)} 
+                disabled={loading}
+                style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', border: '2px solid var(--color-border)', borderRadius: '12px', background: 'var(--color-surface)', cursor: loading ? 'default' : 'pointer', transition: 'transform 0.15s ease, opacity 0.2s ease', opacity: loading ? 0.7 : 1 }}
+                onMouseEnter={e => !loading && (e.currentTarget.style.transform = 'translateY(-2px)')}
+                onMouseLeave={e => !loading && (e.currentTarget.style.transform = 'translateY(0)')}
+              >
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text)' }}>Whiteboard</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', textAlign: 'center', marginTop: '0.25rem' }}>Infinite canvas</div>
+                </div>
               </button>
             </div>
           </div>

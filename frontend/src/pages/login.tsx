@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 import * as NotesApi from './api/fetch'
 import { useRouter } from 'next/router'
+import env from '@/util/config'
 
 const Login: React.FC = () => {
   const router = useRouter()
@@ -14,24 +15,29 @@ const Login: React.FC = () => {
   const loginClicked = () => {
     async function login() {
       try {
-        if (!email && !password) {
+        if (!email || !password) {
           setErrMessage(true)
           setTimeout(() => setErrMessage(false), 3000)
         } else {
           setLoading(true)
           const user = await NotesApi.loginUser({ email, password })
           if (user) {
-            router.push('/dashboard')
+            window.location.href = '/notes'
           }
         }
       } catch (error) {
         console.log(error)
-        alert(error)
+        setErrMessage(true)
+        setTimeout(() => setErrMessage(false), 3000)
       } finally {
         setLoading(false)
       }
     }
     login()
+  }
+
+  function redirectToGoogleAuth() {
+    window.location.href = env.SERVER_URL + '/api/auth/google'
   }
 
   return (
@@ -74,7 +80,7 @@ const Login: React.FC = () => {
               marginBottom: '1.25rem',
             }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M15 3H19a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h4M12 17v-6m0 0V9m0 2H9m3 0h3" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M15 3H19a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h4M12 17v-6m0 0V9m0 2H9m3 0h3" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--color-text)', marginBottom: '0.35rem', letterSpacing: '-0.02em' }}>Welcome back</h1>
@@ -83,6 +89,22 @@ const Login: React.FC = () => {
 
           {/* Form */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <button
+              className='btn-ghost'
+              style={{ width: '100%', padding: '0.75rem', fontSize: '0.95rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', background: '#fff', color: '#000', borderColor: '#fff' }}
+              onClick={redirectToGoogleAuth}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+              </svg>
+              <span style={{ fontWeight: 700 }}>Continue with Google</span>
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '0.25rem 0' }}>
+              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>or sign in with email</span>
+              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+            </div>
             <div>
               <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-text-muted)', marginBottom: '0.5rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                 Email
@@ -121,7 +143,7 @@ const Login: React.FC = () => {
                 display: 'flex', alignItems: 'center', gap: '0.5rem',
                 boxShadow: '3px 3px 0px var(--color-accent-red)',
               }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
                 Please fill in all fields
               </div>
             )}

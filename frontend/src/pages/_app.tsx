@@ -18,12 +18,12 @@ export default function App({ Component, pageProps }: AppProps) {
         console.log(error)
       }
     }
-    fetchLoggedInUser
+    fetchLoggedInUser()
   }, [])
   return (
     <div>
       <Navbar loggedInUser={loggedInUser} onLogout={() => setLoggedInUser(null)} />
-      <Component {...pageProps} />
+      <Component {...pageProps} loggedInUser={loggedInUser} />
     </div>
   )
 }

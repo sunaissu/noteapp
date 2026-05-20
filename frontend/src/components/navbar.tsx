@@ -2,6 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 import { User } from '../model/user'
 import * as NotesApi from '../pages/api/fetch'
+import { NotebookIcon, CaretDownIcon, SquaresFourIcon, SignOutIcon } from '@phosphor-icons/react'
 
 interface Props {
   loggedInUser: User | null
@@ -15,6 +16,7 @@ const Navbar: React.FC<Props> = ({ loggedInUser, onLogout }: Props) => {
     try {
       await NotesApi.logout()
       onLogout()
+      window.location.href = '/'
     } catch (error) {
       console.log(error)
     }
@@ -32,7 +34,7 @@ const Navbar: React.FC<Props> = ({ loggedInUser, onLogout }: Props) => {
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}
     >
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem', display: 'flex', alignItems: 'center', height: '64px' }}>
+      <div style={{ padding: '0 2rem', display: 'flex', alignItems: 'center', height: '64px' }}>
         {/* Logo */}
         <Link href='/' style={{ textDecoration: 'none', flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -43,9 +45,7 @@ const Navbar: React.FC<Props> = ({ loggedInUser, onLogout }: Props) => {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 0 16px rgba(108,99,255,0.5)',
             }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M9 3H5a2 2 0 00-2 2v4M9 3h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <NotebookIcon weight="bold" color="#fff" size={16} />
             </div>
             <span style={{ fontSize: '1rem', fontWeight: 700, color: '#e8eaf6', letterSpacing: '-0.01em' }}>
               Notes<span style={{ color: '#6c63ff' }}>App</span>
@@ -54,7 +54,7 @@ const Navbar: React.FC<Props> = ({ loggedInUser, onLogout }: Props) => {
         </Link>
 
         {/* Nav actions */}
-        {loggedInUser ? (
+        {loggedInUser && loggedInUser.username ? (
           <div style={{ position: 'relative' }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -80,61 +80,42 @@ const Navbar: React.FC<Props> = ({ loggedInUser, onLogout }: Props) => {
                 fontWeight: 800,
                 color: '#fff',
               }}>
-                {loggedInUser.username.charAt(0).toUpperCase()}
+                {loggedInUser?.username ? loggedInUser.username.charAt(0).toUpperCase() : '?'}
               </div>
-              {loggedInUser.username}
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              {loggedInUser?.username || 'User'}
+              <CaretDownIcon weight="bold" size={14} />
             </button>
 
             {isHovered && (
-              <div style={{
-                position: 'absolute', right: 0, top: 'calc(100% + 8px)',
-                background: 'rgba(15, 17, 23, 0.95)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '0.75rem',
-                overflow: 'hidden',
-                minWidth: '160px',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-                animation: 'fade-in 0.15s ease',
-              }}>
-                <Link href='/dashboard' style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    padding: '0.75rem 1.25rem',
-                    color: '#e8eaf6',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    transition: 'background 0.15s ease',
-                  }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+              <div style={{ position: 'absolute', right: 0, top: '100%', paddingTop: '8px' }}>
+                <div style={{
+                  background: 'rgba(15, 17, 23, 0.95)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '0.75rem',
+                  overflow: 'hidden',
+                  minWidth: '160px',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+                  animation: 'fade-in 0.15s ease',
+                }}>
+                  <div
+                    style={{
+                      padding: '0.75rem 1.25rem',
+                      color: '#f87171',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: '0.5rem',
+                      transition: 'background 0.15s ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.08)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    onClick={() => logout()}
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/></svg>
-                    Dashboard
+                    <SignOutIcon weight="bold" size={16} />
+                    Log Out
                   </div>
-                </Link>
-                <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '0 1rem' }} />
-                <div
-                  style={{
-                    padding: '0.75rem 1.25rem',
-                    color: '#f87171',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    transition: 'background 0.15s ease',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.08)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  onClick={() => logout()}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  Log Out
                 </div>
               </div>
             )}
