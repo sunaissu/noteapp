@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import express, { Request, Response, NextFunction } from 'express'
-import noteRoutes from './routes/notes'
+import noteRoutes from './routes/notes.route'
 import morgan from 'morgan'
 import createHttpError, { isHttpError } from 'http-errors'
 import cors from 'cors'
@@ -32,7 +32,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 12 * 60 * 60 * 1000,
-      secure: env.ENVIRONMENT === 'production' ? true : false
+      secure: env.ENVIRONMENT === 'production' ? true : false,
+      httpOnly: true,
+      sameSite: 'lax' 
     },
     rolling: true,
     store: MongoStore.create({

@@ -1,6 +1,7 @@
 import env from '@/util/config'
 import { Note } from '../../model/note'
 import { User } from '../../model/user'
+import Router from 'next/router'
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init)
@@ -9,12 +10,20 @@ async function fetchData(input: RequestInfo, init?: RequestInit) {
   } else {
     const errorBody = await response.json()
     const errorMessage = errorBody.error
+    if (response.status == 401) {
+      Router.push('/unauthorized')
+      throw Error('You are not authorized to access this resource')
+    }
     throw Error(errorMessage)
   }
 }
 
 export async function getLoginUser(): Promise<User> {
-  const response = await fetchData(`${env.SERVER_URL}/api/users/getUser`, { method: 'GET', credentials: 'include' })
+  const response = await fetch(`${env.SERVER_URL}/api/users/getUser`, { method: 'GET', credentials: 'include' })
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}))
+    throw new Error(errorBody.error || 'Failed to fetch user')
+  }
   const body = await response.json()
   return body.user
 }
@@ -26,12 +35,16 @@ interface RegisterCredentials {
 }
 
 export async function registerUser(user: RegisterCredentials): Promise<User> {
-  const response = await fetchData(`${env.SERVER_URL}/api/auth/register`, {
+  const response = await fetch(`${env.SERVER_URL}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user),
     credentials: 'include'
   })
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}))
+    throw new Error(errorBody.error || 'Failed to fetch user')
+  }
   const body = await response.json()
   return body.user
 }
@@ -42,12 +55,16 @@ interface LoginCredentials {
 }
 
 export async function loginUser(user: LoginCredentials): Promise<User> {
-  const response = await fetchData(`${env.SERVER_URL}/api/auth/login`, {
+  const response = await fetch(`${env.SERVER_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user),
     credentials: 'include'
   })
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}))
+    throw new Error(errorBody.error || 'Failed to fetch user')
+  }
   const body = await response.json()
   return body.user
 }
@@ -57,7 +74,7 @@ export async function logout() {
 }
 
 export async function fetchNotes(): Promise<Note[]> {
-  const response = await fetch(`${env.SERVER_URL}/api/notes`, { method: 'GET', credentials: 'include' })
+  const response = await fetchData(`${env.SERVER_URL}/api/notes`, { method: 'GET', credentials: 'include' })
   return await response.json()
 }
 
@@ -68,7 +85,7 @@ export interface NoteInput {
 }
 
 export async function createNotes(note: NoteInput) {
-  const response = await fetch(`${env.SERVER_URL}/api/notes`, {
+  const response = await fetchData(`${env.SERVER_URL}/api/notes`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -80,7 +97,7 @@ export async function createNotes(note: NoteInput) {
 }
 
 export async function updateNotes(id: string, note: NoteInput) {
-  const response = await fetch(`${env.SERVER_URL}/api/notes/${id}`, {
+  const response = await fetchData(`${env.SERVER_URL}/api/notes/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
@@ -92,12 +109,11 @@ export async function updateNotes(id: string, note: NoteInput) {
 }
 
 export async function deleteNotes(id: string) {
-  const response = await fetch(`${env.SERVER_URL}/api/notes/${id}`, {
+  const response = await fetchData(`${env.SERVER_URL}/api/notes/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
     credentials: 'include'
   })
-  console.log(response)
 }
