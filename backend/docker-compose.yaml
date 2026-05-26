@@ -4,33 +4,61 @@ services:
   mongo1:
     image: mongo:latest
     container_name: mongo1
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27018"]
     ports:
-      - "27017:27017"
+      - "27018:27018"
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27018", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   mongo2:
     image: mongo:latest
     container_name: mongo2
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27019"]
     ports:
-      - "27018:27017"
+      - "27019:27019"
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27019", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   mongo3:
     image: mongo:latest
     container_name: mongo3
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27020"]
     ports:
-      - "27019:27017"
+      - "27020:27020"
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27020", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   mongo-init:
     image: mongo:latest
     depends_on:
-      - mongo1
-      - mongo2
-      - mongo3
-    entrypoint:
-      - "mongosh"
-      - "--host"
-      - "mongo1"
-      - "--eval"
-      - "rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo1:27017'},{_id:1,host:'mongo2:27017'},{_id:2,host:'mongo3:27017'}]})"
+      mongo1:
+        condition: service_healthy
+      mongo2:
+        condition: service_healthy
+      mongo3:
+        condition: service_healthy
+    entrypoint: >
+      bash -c "
+        mongosh --host mongo1 --port 27018 --eval \"
+          rs.initiate({
+            _id: 'rs0',
+            members: [
+              { _id: 0, host: 'mongo1:27018', priority: 2 },
+              { _id: 1, host: 'mongo2:27019', priority: 1 },
+              { _id: 2, host: 'mongo3:27020', priority: 1 }
+            ]
+          })
+        \"
+      "
