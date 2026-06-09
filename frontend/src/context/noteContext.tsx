@@ -1,12 +1,12 @@
-import { createContext } from 'react'
-import { Note } from '../model/note'
+import { createContext, Dispatch, SetStateAction } from "react";
+import { Note } from "../model/note";
 
 const NoteContext = createContext<{
-  notes: Note[]
-  setNotes: (notes: Note[]) => void
+  notes: Note[];
+  setNotes: Dispatch<SetStateAction<Note[]>>;
 }>({
   notes: [],
-  setNotes: () => {}
-})
+  setNotes: () => {},
+});
 
-export default NoteContext
+export default NoteContext;
