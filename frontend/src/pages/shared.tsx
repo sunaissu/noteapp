@@ -4,7 +4,6 @@ import AppLayout from "../components/appLayout";
 import {
   MagnifyingGlassIcon,
   HandshakeIcon,
-  StarIcon,
 } from "@phosphor-icons/react";
 import { Note, isNoteFavorited, noteMatchesSearch } from "../model/note";
 import { User } from "../model/user";
