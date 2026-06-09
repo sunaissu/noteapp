@@ -22,6 +22,7 @@ import {
   SpinnerBallIcon,
 } from "@phosphor-icons/react";
 import ActiveNoteEditor from "../components/activeNoteEditor";
+import NoteTitleEditor from "../components/noteTitleEditor";
 
 interface NotesPageProps {
   loggedInUser: User | null;
@@ -72,11 +73,6 @@ const Notes: React.FC<NotesPageProps> = ({ loggedInUser }) => {
   };
 
   const handleNoteSelect = (id: string) => closeOrSwitchNote(id);
-
-  // Inline-editable title state
-  const [editingTitle, setEditingTitle] = useState(false);
-  const [titleDraft, setTitleDraft] = useState("");
-  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreateNote = async (type: NoteType) => {
     try {
@@ -130,37 +126,17 @@ const Notes: React.FC<NotesPageProps> = ({ loggedInUser }) => {
     loadNotes();
   }, []);
 
-  useEffect(() => {
-    setEditingTitle(false);
-    if (activeNote) setTitleDraft(activeNote.title);
-  }, [selectedNoteId]);
-
-  useEffect(() => {
-    if (editingTitle) {
-      titleInputRef.current?.focus();
-      titleInputRef.current?.select();
-    }
-  }, [editingTitle]);
-
-  const commitTitleEdit = async () => {
-    if (!activeNote) return;
-    const trimmed = titleDraft.trim();
-    if (!trimmed || trimmed === activeNote.title) {
-      setEditingTitle(false);
-      setTitleDraft(activeNote.title);
-      return;
-    }
+  const handleUpdateTitle = async (noteId: string, newTitle: string) => {
     try {
-      await NotesApi.updateNotes(activeNote._id, { title: trimmed });
+      await NotesApi.updateNotes(noteId, { title: newTitle });
       setNotes((prev) =>
         prev.map((n) =>
-          n._id === activeNote._id ? { ...n, title: trimmed } : n,
+          n._id === noteId ? { ...n, title: newTitle } : n,
         ),
       );
     } catch (err) {
       console.error("Failed to update title", err);
     }
-    setEditingTitle(false);
   };
 
   const filteredNotes = notes.filter((n) => noteMatchesSearch(n, search));
@@ -449,68 +425,11 @@ const Notes: React.FC<NotesPageProps> = ({ loggedInUser }) => {
                   }}
                 >
                   {/* Inline-editable title */}
-                  {editingTitle ? (
-                    <input
-                      ref={titleInputRef}
-                      value={titleDraft}
-                      onChange={(e) => setTitleDraft(e.target.value)}
-                      onBlur={commitTitleEdit}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          commitTitleEdit();
-                        }
-                        if (e.key === "Escape") {
-                          setEditingTitle(false);
-                          setTitleDraft(activeNote.title);
-                        }
-                      }}
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        fontSize: "1rem",
-                        fontWeight: 700,
-                        background: "var(--color-surface-2)",
-                        color: "var(--color-text)",
-                        border: "2px solid var(--color-accent-blue)",
-                        borderRadius: "6px",
-                        padding: "0.2rem 0.5rem",
-                        outline: "none",
-                        fontFamily: "var(--font-sans)",
-                      }}
-                    />
-                  ) : (
-                    <span
-                      title="Click to rename"
-                      onClick={() => {
-                        setTitleDraft(activeNote.title);
-                        setEditingTitle(true);
-                      }}
-                      style={{
-                        fontSize: "1rem",
-                        fontWeight: 700,
-                        color: "var(--color-text)",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        flex: 1,
-                        minWidth: 0,
-                        cursor: "text",
-                        borderBottom: "1px dashed transparent",
-                        transition: "border-color 0.15s",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.borderBottomColor =
-                          "var(--color-text-muted)")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.borderBottomColor =
-                          "transparent")
-                      }
-                    >
-                      {activeNote.title}
-                    </span>
-                  )}
+                  <NoteTitleEditor
+                    key={activeNote._id}
+                    note={activeNote}
+                    onUpdateTitle={handleUpdateTitle}
+                  />
                 </div>
 
                 <div
@@ -678,6 +597,7 @@ const Notes: React.FC<NotesPageProps> = ({ loggedInUser }) => {
                   </div>
                 ) : (
                   <ActiveNoteEditor
+                    key={activeNote._id}
                     note={activeNote}
                     readOnly={!canEdit}
                     onSaveStatusChange={setSaveStatus}

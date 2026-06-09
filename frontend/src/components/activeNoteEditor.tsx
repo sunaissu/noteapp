@@ -14,7 +14,6 @@ import NoteContext from "../context/noteContext";
 interface ActiveNoteEditorProps {
   note: Note;
   readOnly?: boolean;
-  onTitleChange?: (noteId: string, newTitle: string) => void;
   onSaveStatusChange?: (status: "saving" | "saved" | "idle") => void;
 }
 
@@ -23,15 +22,28 @@ const AUTOSAVE_DEBOUNCE_MS = 1500;
 const ActiveNoteEditor: React.FC<ActiveNoteEditorProps> = ({
   note,
   readOnly,
-  onTitleChange,
   onSaveStatusChange,
 }) => {
-  const [content, setContent] = useState("");
+  const initialDocContent =
+    note.type === NoteType.Document ? (note as DocumentNote).content || "" : "";
+  const initialWbContent =
+    note.type === NoteType.Whiteboard
+      ? (note as WhiteboardNote).content
+      : undefined;
+  const initialSerializedWbContent = initialWbContent
+    ? JSON.stringify(initialWbContent)
+    : "";
+
+  const [content, setContent] = useState(initialDocContent);
   const { setNotes } = useContext(NoteContext);
 
   const boardRef = useRef<NoteboardRef>(null);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSavedContent = useRef<string>("");
+  const lastSavedContent = useRef<string>(
+    note.type === NoteType.Document
+      ? initialDocContent
+      : initialSerializedWbContent,
+  );
 
   const contentRef = useRef(content);
   useEffect(() => {
@@ -40,14 +52,7 @@ const ActiveNoteEditor: React.FC<ActiveNoteEditorProps> = ({
 
   useEffect(() => {
     onSaveStatusChange?.("idle");
-    if (note.type === NoteType.Document) {
-      setContent((note as DocumentNote).content || "");
-      lastSavedContent.current = (note as DocumentNote).content || "";
-    }
-    if (note.type === NoteType.Whiteboard) {
-      const wb = note as WhiteboardNote;
-      lastSavedContent.current = wb.content ? JSON.stringify(wb.content) : "";
-    }
+    const currentBoard = boardRef.current;
 
     return () => {
       if (autosaveTimer.current) {
@@ -64,7 +69,7 @@ const ActiveNoteEditor: React.FC<ActiveNoteEditorProps> = ({
             );
           }
         } else if (note.type === NoteType.Whiteboard) {
-          const session = boardRef.current?.getSession();
+          const session = currentBoard?.getSession();
           if (session) {
             const serialized = JSON.stringify(session);
             if (serialized !== lastSavedContent.current) {
@@ -76,7 +81,7 @@ const ActiveNoteEditor: React.FC<ActiveNoteEditorProps> = ({
         }
       }
     };
-  }, [note._id, readOnly]);
+  }, [note._id, note.type, readOnly, onSaveStatusChange]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -141,7 +146,7 @@ const ActiveNoteEditor: React.FC<ActiveNoteEditorProps> = ({
         console.error("Failed to autosave note", error);
       }
     },
-    [note._id, setNotes, readOnly],
+    [note._id, setNotes, readOnly, onSaveStatusChange],
   );
 
   const handleDocumentContentChange = (
@@ -179,7 +184,7 @@ const ActiveNoteEditor: React.FC<ActiveNoteEditorProps> = ({
         console.error("Failed to autosave whiteboard", err);
       }
     },
-    [note._id, setNotes, readOnly],
+    [note._id, setNotes, readOnly, onSaveStatusChange],
   );
 
   const handleWhiteboardElementsChange = useCallback(() => {

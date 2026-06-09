@@ -10,7 +10,8 @@ interface Props {
 }
 
 const UpdateNoteDialog: React.FC<Props> = ({ showupdate, note, clicked }: Props) => {
-  const { _id: id, text, title } = note
+  const { _id: id, title } = note
+  const text = note.type === "document" ? note.content : ""
   const [updateDialog, setUpdateDialog] = React.useState<boolean>(showupdate)
   const [newTitle, setNewTitle] = React.useState<string>(title)
   const [newText, setNewText] = React.useState<string>(text)

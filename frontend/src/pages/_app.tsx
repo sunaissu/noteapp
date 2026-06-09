@@ -39,7 +39,7 @@ export default function App({ Component, pageProps }: AppProps) {
     if (loggedInUser && GUEST_ONLY_ROUTES.includes(router.pathname)) {
       router.push("/");
     }
-  }, [loggedInUser, router.pathname, isLoading]);
+  }, [loggedInUser, router, router.pathname, isLoading]);
 
   const handleLogout = async () => {
     setIsLoading(true);
