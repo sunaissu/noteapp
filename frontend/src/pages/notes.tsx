@@ -8,7 +8,7 @@ import {
 } from "../model/note";
 import { User } from "../model/user";
 import NoteCard from "../components/note";
-import * as NotesApi from "./api/fetch";
+import * as NotesApi from "../util/fetch";
 import AddNoteDialog from "../components/addnotedialog";
 import NoteContext from "../context/noteContext";
 import AppLayout from "../components/appLayout";
@@ -130,9 +130,7 @@ const Notes: React.FC<NotesPageProps> = ({ loggedInUser }) => {
     try {
       await NotesApi.updateNotes(noteId, { title: newTitle });
       setNotes((prev) =>
-        prev.map((n) =>
-          n._id === noteId ? { ...n, title: newTitle } : n,
-        ),
+        prev.map((n) => (n._id === noteId ? { ...n, title: newTitle } : n)),
       );
     } catch (err) {
       console.error("Failed to update title", err);

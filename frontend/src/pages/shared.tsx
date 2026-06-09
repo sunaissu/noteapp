@@ -9,7 +9,7 @@ import {
 import { Note, isNoteFavorited, noteMatchesSearch } from "../model/note";
 import { User } from "../model/user";
 import NoteCard from "../components/note";
-import * as NotesApi from "./api/fetch";
+import * as NotesApi from "../util/fetch";
 
 interface SharedPageProps {
   loggedInUser: User | null;

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
-import * as NotesApi from "./api/fetch";
+import * as NotesApi from "../util/fetch";
 import { useRouter } from "next/router";
 import env from "@/util/config";
 

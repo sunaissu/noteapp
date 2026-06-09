@@ -1,6 +1,6 @@
 import env from "@/util/config";
-import { Note } from "../../model/note";
-import { User } from "../../model/user";
+import { Note } from "../model/note";
+import { User } from "../model/user";
 import Router from "next/router";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {

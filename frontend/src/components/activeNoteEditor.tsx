@@ -8,7 +8,7 @@ import React, {
 import { Note, NoteType, DocumentNote, WhiteboardNote } from "../model/note";
 import { Noteboard, NoteboardRef } from "@sunaissu/noteboard";
 import type { NoteboardSession } from "@sunaissu/noteboard";
-import * as NotesApi from "../pages/api/fetch";
+import * as NotesApi from "../util/fetch";
 import NoteContext from "../context/noteContext";
 
 interface ActiveNoteEditorProps {

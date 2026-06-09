@@ -3,7 +3,7 @@ import type { AppProps } from "next/app";
 import Navbar from "../components/navbar";
 import React, { useEffect } from "react";
 import { User } from "../model/user";
-import * as NotesApi from "./api/fetch";
+import * as NotesApi from "../util/fetch";
 import { SpinnerBallIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/router";
 
