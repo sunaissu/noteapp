@@ -83,7 +83,7 @@ const Settings: React.FC = () => {
                   lineHeight: 1.5,
                 }}
               >
-                We're currently building out the preferences dashboard. Check
+                We are currently building out the preferences dashboard. Check
                 back later for themes, account management, and more!
               </p>
             </div>

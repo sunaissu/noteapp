@@ -184,7 +184,7 @@ export default function Home({ loggedInUser }: HomeProps) {
               color: "var(--color-text)",
             }}
           >
-            Everything you need, nothing you don't
+            Everything you need, nothing you do not
           </h2>
         </div>
 
