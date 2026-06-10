@@ -3,6 +3,7 @@ import { str, port } from 'envalid/dist/validators'
 
 export default cleanEnv(process.env, {
   MONGO_CONN: str(),
+  MONGO_DB_NAME: str(),
   PORT: port(),
   SESSION_SECRET: str(),
   GOOGLE_AUTH_CLIENT_ID: str(),

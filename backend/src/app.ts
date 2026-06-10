@@ -38,7 +38,8 @@ app.use(
     },
     rolling: true,
     store: MongoStore.create({
-      mongoUrl: env.MONGO_CONN
+      mongoUrl: env.MONGO_CONN,
+      dbName: env.MONGO_DB_NAME
     })
   })
 )
