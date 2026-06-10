@@ -298,92 +298,91 @@ const Notes: React.FC<NotesPageProps> = ({ loggedInUser }) => {
               </div>
             </div>
 
-            {filteredNotes.length === 0 ? (
-              <div
-                style={{
-                  padding: "1rem",
-                  textAlign: "center",
-                  color: "var(--color-text-muted)",
-                }}
-              >
-                No notes found.
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: selectedNoteId
-                    ? "1fr"
-                    : "repeat(auto-fill, minmax(280px, 1fr))",
-                  gridAutoRows: "220px",
-                  gap: "0.75rem",
-                  overflowY: selectedNoteId ? "auto" : "visible",
-                  paddingRight: selectedNoteId ? "0.5rem" : "0",
-                  paddingBottom: "1rem",
-                }}
-              >
-                {!selectedNoteId && (
-                  <AddNoteDialog
-                    onSave={handleCreateNote}
-                    trigger={
-                      <div
-                        style={{
-                          cursor: "pointer",
-                          height: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: "0.75rem",
-                          borderRadius: "8px",
-                          border: "2px dashed var(--color-border)",
-                          background: "var(--color-surface)",
-                          color: "var(--color-text-muted)",
-                          transition:
-                            "border-color 0.15s, color 0.15s, background-color 0.15s",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor =
-                            "var(--color-accent-blue)";
-                          e.currentTarget.style.color =
-                            "var(--color-accent-blue)";
-                          e.currentTarget.style.backgroundColor =
-                            "rgba(96, 165, 250, 0.05)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor =
-                            "var(--color-border)";
-                          e.currentTarget.style.color =
-                            "var(--color-text-muted)";
-                          e.currentTarget.style.backgroundColor =
-                            "var(--color-surface)";
-                        }}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: selectedNoteId
+                  ? "1fr"
+                  : "repeat(auto-fill, minmax(280px, 1fr))",
+                gridAutoRows: "220px",
+                gap: "0.75rem",
+                overflowY: selectedNoteId ? "auto" : "visible",
+                paddingRight: selectedNoteId ? "0.5rem" : "0",
+                paddingBottom: "1rem",
+              }}
+            >
+              {!selectedNoteId && (
+                <AddNoteDialog
+                  onSave={handleCreateNote}
+                  trigger={
+                    <div
+                      style={{
+                        cursor: "pointer",
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.75rem",
+                        borderRadius: "8px",
+                        border: "2px dashed var(--color-border)",
+                        background: "var(--color-surface)",
+                        color: "var(--color-text-muted)",
+                        transition:
+                          "border-color 0.15s, color 0.15s, background-color 0.15s",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor =
+                          "var(--color-accent-blue)";
+                        e.currentTarget.style.color =
+                          "var(--color-accent-blue)";
+                        e.currentTarget.style.backgroundColor =
+                          "rgba(96, 165, 250, 0.05)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor =
+                          "var(--color-border)";
+                        e.currentTarget.style.color =
+                          "var(--color-text-muted)";
+                        e.currentTarget.style.backgroundColor =
+                          "var(--color-surface)";
+                      }}
+                    >
+                      <PlusIcon size={32} weight="bold" />
+                      <span
+                        style={{ fontWeight: 700, letterSpacing: "0.02em" }}
                       >
-                        <PlusIcon size={32} weight="bold" />
-                        <span
-                          style={{ fontWeight: 700, letterSpacing: "0.02em" }}
-                        >
-                          Add New Note
-                        </span>
-                      </div>
-                    }
+                        Add New Note
+                      </span>
+                    </div>
+                  }
+                />
+              )}
+              {filteredNotes.map((note) => (
+                <div
+                  key={note._id}
+                  onClick={() => handleNoteSelect(note._id)}
+                  style={{ cursor: "pointer", height: "100%" }}
+                >
+                  <NoteCard
+                    note={note}
+                    loggedInUserId={loggedInUser?._id}
+                    onToggleFavorite={handleToggleFavorite}
                   />
-                )}
-                {filteredNotes.map((note) => (
-                  <div
-                    key={note._id}
-                    onClick={() => handleNoteSelect(note._id)}
-                    style={{ cursor: "pointer", height: "100%" }}
-                  >
-                    <NoteCard
-                      note={note}
-                      loggedInUserId={loggedInUser?._id}
-                      onToggleFavorite={handleToggleFavorite}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+              {filteredNotes.length === 0 && search && (
+                <div
+                  style={{
+                    padding: "1rem",
+                    textAlign: "center",
+                    color: "var(--color-text-muted)",
+                  }}
+                >
+                  No notes found.
+                </div>
+              )}
+            </div>
           </div>
 
           {activeNote && (
